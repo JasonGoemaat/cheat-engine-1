@@ -329,6 +329,12 @@ type
 
   TfrmStructures2 = class(TForm)
     FindDialog1: TFindDialog;
+    labelTooltipDecimal: TLabel;
+    labelTooltipDouble: TLabel;
+    labelTooltipAscii: TLabel;
+    labelTooltipUnicode: TLabel;
+    labelTooltipHex: TLabel;
+    labelTooltipFloat: TLabel;
     MenuItem5: TMenuItem;
     MenuItem6: TMenuItem;
     MenuItem7: TMenuItem;
@@ -387,6 +393,7 @@ type
     miNewWindow: TMenuItem;
     Open1: TMenuItem;
     OpenDialog1: TOpenDialog;
+    panelTooltip: TPanel;
     pmStructureView: TPopupMenu;
     miRecalculateAddress: TMenuItem;
     Renamestructure1: TMenuItem;
@@ -496,6 +503,10 @@ type
     procedure RefreshStructureList;
     procedure TreeViewHScroll(sender: TObject; scrolledleft, maxscrolledleft: integer);
     procedure TreeViewVScroll(sender: TObject);
+
+    procedure TreeViewMouseMove(sender: TObject; shift: TShiftState; x,y: integer);
+    procedure SetPanelTooltip(node: TTreeNode; col: TStructColumn; x, y, right: Integer);
+    procedure TreeViewMouseLeave(sender: TObject);
 
     procedure removeColumn(columnid: integer);
     procedure FillTreenodeWithStructData(currentnode: TTreenode);
@@ -2993,6 +3004,89 @@ begin
   HeaderControl1.Width:=tvStructureView.clientwidth  +maxscrolledleft+100;
 end;
 
+procedure TfrmStructures2.TreeViewMouseMove(sender: TObject; shift: TShiftState; x,y: integer);
+var pos: TPoint;
+  node: TTreeNode;
+  col: TStructColumn;
+  i: Integer;
+  right: Integer;
+  xPos, yPos: Integer;
+
+  m, m2: TPoint;
+  c: TStructColumn;
+begin
+  node := nil;
+  col := nil;
+
+  if (shift = [ssShift]) then begin
+    node := tvStructureView.GetNodeAt(x, y);
+    if (node <> nil) then begin
+      //col := self.getColumnAtXPos(x);
+      yPos := node.Top + (node.Height div 2) + self.tvStructureView.Top;
+      yPos := yPos - (panelTooltip.Height div 2);
+      for i:=1 to HeaderControl1.Sections.count-1 do
+        if inrange(x, HeaderControl1.Sections[i].Left, HeaderControl1.Sections[i].Left + HeaderControl1.Sections[i].Width) then
+        begin
+          col := columns[i-1];
+          right := HeaderControl1.Sections[i].Left + HeaderControl1.Sections[i].Width;
+          xPos := right - 5;
+          break;
+        end;
+    end;
+    //Caption := Format('Hello, world!  %d,%d right is %d', [x, y, right] );
+  end;
+
+  SetPanelTooltip(node, col, xPos, yPos, right);
+end;
+
+procedure TfrmSTructures2.SetPanelTooltip(node: TTreeNode; col: TStructColumn; x, y, right: Integer);
+var s: string;
+  address: ptruint;
+  hasError: boolean;
+  hex, dec, float, double, ascii, unicode: string;
+  cn: string;
+  left, width: integer;
+  colShape: TShape;
+  colBounds: TRect;
+  colSize: TSize;
+  clientRect: TRect;
+  halfHeight: Integer;
+begin
+  if (node<>nil) and (col<>nil) then
+  begin
+    try
+      address := getAddressFromNode(node, col, hasError);
+      hex := readAndParseAddress(address, vtDword, nil, true, true, 4); // bools are hexoverride, signed
+      dec := readAndParseAddress(address, vtDword, nil, false, false, 4);
+      float := readAndParseAddress(address, vtSingle, nil, false, false, 4);
+      double := readAndParseAddress(address, vtDouble, nil, false, false, 4);
+      ascii := readAndParseAddress(address, vtString, nil, false, false, 32);
+      unicode := readAndParseAddress(address, vtUnicodeString, nil, false, false, 32);
+
+      self.labelTooltipHex.Caption := Format('Hex: %s', [hex]);
+      self.labelTooltipDecimal.Caption := Format('Dec: %s', [dec]);
+      self.labelTooltipFloat.Caption := Format('Sin: %s', [float]);
+      self.labelTooltipDouble.Caption := Format('Dbl: %s', [double]);
+      self.labelTooltipAscii.Caption := Format('Asc: %s', [ascii]);
+      self.labelTooltipUnicode.Caption := Format('Uni: %s', [unicode]);
+
+      self.panelTooltip.Left := x;
+      self.panelTooltip.Top := y;
+      self.panelTooltip.Visible := true;
+      Repaint;
+    except
+      self.panelTooltip.Visible := false;
+    end;
+  end else begin
+    self.panelTooltip.Visible := false;
+  end;
+end;
+
+// When mouse moves off the tree view, hide the types tooltip
+procedure TfrmStructures2.TreeViewMouseLeave(sender: TObject);
+begin
+  self.panelTooltip.Visible := false;
+end;
 
 procedure TfrmStructures2.FormDestroy(Sender: TObject);
 var showaddress: integer;
@@ -3026,6 +3120,8 @@ begin
 
   tvStructureView.onHScroll:=TreeViewHScroll;
   tvStructureView.onVScroll:=TreeViewVScroll;
+  tvStructureView.onMouseLeave:=TreeViewMouseLeave;
+  tvStructureView.onMouseMove:=TreeViewMouseMove;
 
 
   frmStructures2.Add(self);

@@ -1,11 +1,11 @@
 object frmStructures2: TfrmStructures2
   Left = 449
-  Height = 381
+  Height = 369
   Top = 337
-  Width = 542
+  Width = 558
   Caption = 'Structure dissect'
-  ClientHeight = 361
-  ClientWidth = 542
+  ClientHeight = 349
+  ClientWidth = 558
   Menu = MainMenu1
   OnClose = FormClose
   OnCreate = FormCreate
@@ -22,9 +22,9 @@ object frmStructures2: TfrmStructures2
     AnchorSideBottom.Control = Owner
     AnchorSideBottom.Side = asrBottom
     Left = 0
-    Height = 290
+    Height = 278
     Top = 71
-    Width = 542
+    Width = 558
     Anchors = [akTop, akLeft, akRight, akBottom]
     BorderStyle = bsNone
     Font.CharSet = ANSI_CHARSET
@@ -56,7 +56,7 @@ object frmStructures2: TfrmStructures2
     Left = 0
     Height = 21
     Top = 50
-    Width = 542
+    Width = 558
     DragReorder = False
     Sections = <    
       item
@@ -74,7 +74,7 @@ object frmStructures2: TfrmStructures2
     Left = 0
     Height = 50
     Top = 0
-    Width = 542
+    Width = 558
     HorzScrollBar.Increment = 1
     HorzScrollBar.Page = 1
     HorzScrollBar.Smooth = True
@@ -85,6 +85,75 @@ object frmStructures2: TfrmStructures2
     Constraints.MinHeight = 50
     TabOrder = 2
     OnResize = pnlGroupsResize
+  end
+  object panelTooltip: TPanel
+    Left = 216
+    Height = 112
+    Top = 8
+    Width = 272
+    BorderWidth = 1
+    BorderStyle = bsSingle
+    ClientHeight = 108
+    ClientWidth = 268
+    Color = clBackground
+    Font.CharSet = ANSI_CHARSET
+    Font.Color = clWhite
+    Font.Height = -13
+    Font.Name = 'Verdana'
+    Font.Pitch = fpVariable
+    Font.Quality = fqDraft
+    ParentColor = False
+    ParentFont = False
+    TabOrder = 3
+    Visible = False
+    object labelTooltipDecimal: TLabel
+      Left = 7
+      Height = 16
+      Top = 6
+      Width = 50
+      Caption = 'Decimal'
+      ParentColor = False
+    end
+    object labelTooltipHex: TLabel
+      Left = 8
+      Height = 16
+      Top = 24
+      Width = 24
+      Caption = 'Hex'
+      ParentColor = False
+    end
+    object labelTooltipFloat: TLabel
+      Left = 8
+      Height = 16
+      Top = 40
+      Width = 33
+      Caption = 'Float'
+      ParentColor = False
+    end
+    object labelTooltipDouble: TLabel
+      Left = 8
+      Height = 16
+      Top = 56
+      Width = 44
+      Caption = 'Double'
+      ParentColor = False
+    end
+    object labelTooltipAscii: TLabel
+      Left = 8
+      Height = 16
+      Top = 72
+      Width = 30
+      Caption = 'Ascii'
+      ParentColor = False
+    end
+    object labelTooltipUnicode: TLabel
+      Left = 8
+      Height = 16
+      Top = 88
+      Width = 52
+      Caption = 'Unicode'
+      ParentColor = False
+    end
   end
   object MainMenu1: TMainMenu
     left = 512
